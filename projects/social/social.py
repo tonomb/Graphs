@@ -1,3 +1,8 @@
+import math
+import random
+
+from util import Queue
+
 class User:
     def __init__(self, name):
         self.name = name
@@ -38,15 +43,19 @@ class SocialGraph:
 
         The number of users must be greater than the average number of friendships.
         """
-        # Reset graph
         self.last_id = 0
         self.users = {}
         self.friendships = {}
-        # !!!! IMPLEMENT ME
-
-        # Add users
-
-        # Create friendships
+        for i in range(0, num_users):
+            self.add_user(f"User {i}")
+        possible_friendships = []
+        for user_id in self.users:
+            for friend_id in range(user_id + 1, self.last_id + 1):
+                possible_friendships.append((user_id, friend_id))
+        random.shuffle(possible_friendships)
+        for i in range(0, math.floor(num_users * avg_friendships / 2)):
+            friendship = possible_friendships[i]
+            self.add_friendship(friendship[0], friendship[1])
 
     def get_all_social_paths(self, user_id):
         """
@@ -58,9 +67,79 @@ class SocialGraph:
         The key is the friend's ID and the value is the path.
         """
         visited = {}  # Note that this is a dictionary, not a set
-        # !!!! IMPLEMENT ME
+        
+        # start at user_id, 
+        # traverse all the tree and record all values that are connected
+        # run bfs passing in all the values as a second number, set value to what comes back 
+        visited = self.bft(user_id)
+       
+        for friend in visited:
+           path = self.bfs(user_id, friend)
+           visited[friend] = path
+
         return visited
 
+    def get_frienships(self, user_id):
+        """
+        Get all friendships.
+        """
+        if user_id in self.users:
+            return self.friendships[user_id]
+       
+
+    def bft(self, user_id):
+        """
+        Print each vertex in breadth-first order
+        beginning from user_id.
+        """
+        visited = {}
+
+        q = Queue()
+    
+        q.enqueue(user_id)
+
+        while q.size() > 0:
+            v = q.dequeue()
+
+            if v not in visited:
+                visited[v] = [user_id]
+                for neighbor in self.get_frienships(v):
+                    q.enqueue(neighbor)
+
+        return visited
+
+    def bfs(self, starting_friend, end_friend):
+        """
+        Return a list containing the shortest path from
+        starting_friend to end_friend in
+        breath-first order.
+        """
+        # Create an empty queue and enqueue A PATH TO the starting vertex ID
+        q = Queue()
+        q.enqueue([starting_friend])
+		# Create a Set to store visited vertices
+        visited = set()
+		# While the queue is not empty...
+        while q.size() > 0:
+			# Dequeue the first PATH
+            path = q.dequeue()
+			# Grab the last vertex from the PATH
+            v = path[-1]
+			# If that vertex has not been visited...
+            if v not in visited:
+				# CHECK IF IT'S THE TARGET
+                if v == end_friend:
+				  # IF SO, RETURN PATH
+                    return path
+				# Mark it as visited...
+                visited.add(v)
+				# Then add A PATH TO its neighbors to the back of the queue
+                for neighbor in self.get_frienships(v):
+				  # COPY THE PATH
+                    new_path = path[:]
+                    new_path.append(neighbor)
+				  # APPEND THE NEIGHOR TO THE BACK
+                    q.enqueue(new_path)   
 
 if __name__ == '__main__':
     sg = SocialGraph()

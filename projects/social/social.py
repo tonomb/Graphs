@@ -73,6 +73,7 @@ class SocialGraph:
         # run bfs passing in all the values as a second number, set value to what comes back 
         visited = self.bft(user_id)
        
+        print(len(visited))
         for friend in visited:
            path = self.bfs(user_id, friend)
            visited[friend] = path
@@ -143,7 +144,7 @@ class SocialGraph:
 
 if __name__ == '__main__':
     sg = SocialGraph()
-    sg.populate_graph(10, 2)
-    print(sg.friendships)
+    sg.populate_graph(1000, 5)
+    # print(sg.friendships)
     connections = sg.get_all_social_paths(1)
-    print(connections)
+    # print(connections)

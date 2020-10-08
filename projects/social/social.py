@@ -19,11 +19,14 @@ class SocialGraph:
         """
         if user_id == friend_id:
             print("WARNING: You cannot be friends with yourself")
+            return False
         elif friend_id in self.friendships[user_id] or user_id in self.friendships[friend_id]:
             print("WARNING: Friendship already exists")
+            return False
         else:
             self.friendships[user_id].add(friend_id)
             self.friendships[friend_id].add(user_id)
+            return True
 
     def add_user(self, name):
         """
@@ -48,14 +51,43 @@ class SocialGraph:
         self.friendships = {}
         for i in range(0, num_users):
             self.add_user(f"User {i}")
+
         possible_friendships = []
+        
         for user_id in self.users:
             for friend_id in range(user_id + 1, self.last_id + 1):
                 possible_friendships.append((user_id, friend_id))
         random.shuffle(possible_friendships)
+        
         for i in range(0, math.floor(num_users * avg_friendships / 2)):
             friendship = possible_friendships[i]
             self.add_friendship(friendship[0], friendship[1])
+
+    def populate_graph_2(self, num_users, avg_friendships):
+        """
+        Takes a number of users and an average number of friendships
+        as arguments
+
+        Creates that number of users and a randomly distributed friendships
+        between those users.
+
+        The number of users must be greater than the average number of friendships.
+        """
+        self.last_id = 0
+        self.users = {}
+        self.friendships = {}
+        for i in range(0, num_users):
+            self.add_user(f"User {i}")
+
+        target_friendships = num_users * avg_friendships
+        total_frienships = 0
+
+        while total_frienships < target_friendships:
+            user_id = random.randint(1, self.last_id)
+            friend_id = random.randint(1, self.last_id)
+
+            if self.add_friendship(user_id, friend_id):
+                total_frienships += 2       
 
     def get_all_social_paths(self, user_id):
         """
@@ -73,7 +105,6 @@ class SocialGraph:
         # run bfs passing in all the values as a second number, set value to what comes back 
         visited = self.bft(user_id)
        
-        print(len(visited))
         for friend in visited:
            path = self.bfs(user_id, friend)
            visited[friend] = path
@@ -107,7 +138,7 @@ class SocialGraph:
                 for neighbor in self.get_frienships(v):
                     q.enqueue(neighbor)
 
-        return visited
+        return visited 
 
     def bfs(self, starting_friend, end_friend):
         """
@@ -144,7 +175,7 @@ class SocialGraph:
 
 if __name__ == '__main__':
     sg = SocialGraph()
-    sg.populate_graph(1000, 5)
-    # print(sg.friendships)
+    sg.populate_graph(10, 5)
+    print(sg.friendships)
     connections = sg.get_all_social_paths(1)
-    # print(connections)
+    print(connections)

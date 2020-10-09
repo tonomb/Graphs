@@ -205,7 +205,7 @@ def solve_maze():
 
     print('-----> start <-------')
     while rooms_with_unexplored_paths.size() > 0:
-        
+
         if len(visited) == 500:
             return traversal_path
 
@@ -254,8 +254,6 @@ def solve_maze():
             graph[room.id][d] = new_room.id 
             if new_room.id not in graph:
                 graph[new_room.id] = {} 
-            # else:
-            #     current_path =[]
             if d == 'n':
                 graph[new_room.id]['s'] = room.id
             if d == 's':
